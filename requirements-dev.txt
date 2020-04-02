@@ -1,5 +1,5 @@
 pytest
 pytest-asyncio
 pytest-mock
-mock
+mock==4.0.2
 asynctest

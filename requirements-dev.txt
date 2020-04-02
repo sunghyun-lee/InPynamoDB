@@ -1,4 +1,4 @@
-pytest
+pytest==5.4.1
 pytest-asyncio
 pytest-mock
 mock

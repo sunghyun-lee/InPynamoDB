@@ -2,4 +2,4 @@ pytest
 pytest-asyncio
 pytest-mock
 mock
-asynctest
+asynctest==0.13.0

@@ -9,11 +9,6 @@ install_requires = [
 python_requires = '>=3.6'
 
 
-def version():
-    with open("VERSION") as f:
-        return f.read().strip()
-
-
 setup(
     name='InPynamoDB',
     version=__import__('inpynamodb').__version__,

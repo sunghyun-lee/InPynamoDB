@@ -24,12 +24,17 @@ script:
 after_success:
 - coveralls
 before_deploy:
-- poetry build -f sdist
-deploy:
-  provider: pypi
-  user: __token__
-  password:
-    secure: XPNCXqwOSbCm/nq5C6l0P357aZlcCA6Wg1YRbpBO35V70QG4TzKLlTJxsYiayH5XYduuol9tVXdyHxqUAYenvHKOPbY8EY3uGFxd1fU/OJAuofnuGFqxrpOOmHFGdsdw+5zxvglYJo7xHcvKm/pvUIxFGvT0SnJ+JADMzCfds9P/vc7mVAQFLvQV+cPJp60/EdZOnUpAY8jQ6ehA83p4oX3j6JoHlo+s/V3KPwAQ19syqAAFwfUDr7D1fE09MpC5qqVj2MQr7WAIN4hlDotdnUyHL9QrdM3w7zg5qbANdQe0MWAmez71o2VgjhDFsv3dLnMzHdZFJxCWIB2yf1xLtskoPG4FTIqKpR48FQjrf47Y2hMEjtrLfVIPZEw74F+ILitOhsWqegP/gHRz/x3ymppyaB1oPAp1SyYUi37nWillSfWX7HjLoZ4/Oz0wNGKD7q9UJdK867ZWaat3OcU9fKqP4etRDakC4qxBt+/rI7JNHgBikH+c7T8FwW1qkGxADUszcSGB8EUbRmJTGqBU9k/WgI3hhq3utinBfCl9A6gWx6Set5RYNVGA9osYdURBIAaCDr7wNDOM1ehp57ztHgRRMtFohmLffbQ9BXui4+IlGlq6xRIuW+kN6pb35W54Q4X3n4YJw3Ka2zi+woMDEe6TzsZes6g7ps815kA7ks8=
-  on:
-    tags: true
-    repo: sunghyun-lee/InPynamoDB
+- poetry build
+jobs:
+  include:
+    - stage: deploy
+      python: '3.6'
+      deploy:
+        provider: pypi
+        user: __token__
+        password:
+          secure: "XPNCXqwOSbCm/nq5C6l0P357aZlcCA6Wg1YRbpBO35V70QG4TzKLlTJxsYiayH5XYduuol9tVXdyHxqUAYenvHKOPbY8EY3uGFxd1fU/OJAuofnuGFqxrpOOmHFGdsdw+5zxvglYJo7xHcvKm/pvUIxFGvT0SnJ+JADMzCfds9P/vc7mVAQFLvQV+cPJp60/EdZOnUpAY8jQ6ehA83p4oX3j6JoHlo+s/V3KPwAQ19syqAAFwfUDr7D1fE09MpC5qqVj2MQr7WAIN4hlDotdnUyHL9QrdM3w7zg5qbANdQe0MWAmez71o2VgjhDFsv3dLnMzHdZFJxCWIB2yf1xLtskoPG4FTIqKpR48FQjrf47Y2hMEjtrLfVIPZEw74F+ILitOhsWqegP/gHRz/x3ymppyaB1oPAp1SyYUi37nWillSfWX7HjLoZ4/Oz0wNGKD7q9UJdK867ZWaat3OcU9fKqP4etRDakC4qxBt+/rI7JNHgBikH+c7T8FwW1qkGxADUszcSGB8EUbRmJTGqBU9k/WgI3hhq3utinBfCl9A6gWx6Set5RYNVGA9osYdURBIAaCDr7wNDOM1ehp57ztHgRRMtFohmLffbQ9BXui4+IlGlq6xRIuW+kN6pb35W54Q4X3n4YJw3Ka2zi+woMDEe6TzsZes6g7ps815kA7ks8="
+        distributions: "sdist bdist_wheel"
+        on:
+          tags: true
+          repo: sunghyun-lee/InPynamoDB

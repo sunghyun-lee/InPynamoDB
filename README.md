@@ -1,5 +1,8 @@
 # InPynamoDB
 
+![](https://travis-ci.org/sunghyun-lee/InPynamoDB.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/sunghyun-lee/InPynamoDB/badge.svg?branch=4.1.0)](https://coveralls.io/github/sunghyun-lee/InPynamoDB?branch=master)
+
 This transforms [PynamoDB](https://github.com/pynamodb/PynamoDB)'s basic methods working asynchronously used [aiobotocore](https://github.com/aio-libs/aiobotocore).
 
 This library may be merged into PynamoDB as a feature of it, but for the time being, you can use this library if you need to run any operation on DynamoDB asynchronously. 

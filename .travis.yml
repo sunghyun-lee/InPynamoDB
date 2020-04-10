@@ -1,33 +1,34 @@
 language: python
-
 python:
-  - "3.6"
-
-
-# See https://github.com/travis-ci/travis-ci/issues/9815
+- '3.6'
 matrix:
   include:
-    - python: "3.7"
-      dist: xenial
-      sudo: true
-
+  - python: '3.7'
+    dist: xenial
+    sudo: true
 env:
-  - AWS_SECRET_ACCESS_KEY=fake_key AWS_ACCESS_KEY_ID=fake_id
+- AWS_SECRET_ACCESS_KEY=fake_key AWS_ACCESS_KEY_ID=fake_id
 before_install:
-  - pip install poetry
-
+- pip install poetry
 install:
-  - poetry install
-
+- poetry install
 before_script:
-  - wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz -O /tmp/dynamodb_local_latest.tar.gz
-  - tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp
-  - java -Djava.library.path=/tmp/DynamoDBLocal_lib -jar /tmp/DynamoDBLocal.jar -inMemory -port 8000 &
-  - sleep 2
-
+- wget http://dynamodb-local.s3-website-us-west-2.amazonaws.com/dynamodb_local_latest.tar.gz
+  -O /tmp/dynamodb_local_latest.tar.gz
+- tar -xzf /tmp/dynamodb_local_latest.tar.gz -C /tmp
+- java -Djava.library.path=/tmp/DynamoDBLocal_lib -jar /tmp/DynamoDBLocal.jar -inMemory
+  -port 8000 &
+- sleep 2
 script:
-  - pytest --cov-report term-missing --cov=inpynamodb tests
-# TODO:  - if [[ "$TRAVIS_PYTHON_VERSION" == "3.7" ]]; then mypy .; fi
-
+- pytest --cov-report term-missing --cov=inpynamodb tests
 after_success:
-  - coveralls
+- coveralls
+deploy:
+  provider: pypi
+  user: __token__
+  password:
+    secure: XPNCXqwOSbCm/nq5C6l0P357aZlcCA6Wg1YRbpBO35V70QG4TzKLlTJxsYiayH5XYduuol9tVXdyHxqUAYenvHKOPbY8EY3uGFxd1fU/OJAuofnuGFqxrpOOmHFGdsdw+5zxvglYJo7xHcvKm/pvUIxFGvT0SnJ+JADMzCfds9P/vc7mVAQFLvQV+cPJp60/EdZOnUpAY8jQ6ehA83p4oX3j6JoHlo+s/V3KPwAQ19syqAAFwfUDr7D1fE09MpC5qqVj2MQr7WAIN4hlDotdnUyHL9QrdM3w7zg5qbANdQe0MWAmez71o2VgjhDFsv3dLnMzHdZFJxCWIB2yf1xLtskoPG4FTIqKpR48FQjrf47Y2hMEjtrLfVIPZEw74F+ILitOhsWqegP/gHRz/x3ymppyaB1oPAp1SyYUi37nWillSfWX7HjLoZ4/Oz0wNGKD7q9UJdK867ZWaat3OcU9fKqP4etRDakC4qxBt+/rI7JNHgBikH+c7T8FwW1qkGxADUszcSGB8EUbRmJTGqBU9k/WgI3hhq3utinBfCl9A6gWx6Set5RYNVGA9osYdURBIAaCDr7wNDOM1ehp57ztHgRRMtFohmLffbQ9BXui4+IlGlq6xRIuW+kN6pb35W54Q4X3n4YJw3Ka2zi+woMDEe6TzsZes6g7ps815kA7ks8=
+  distributions: "sdist bdist_wheel"
+  on:
+    tags: true
+    repo: sunghyun-lee/InPynamoDB

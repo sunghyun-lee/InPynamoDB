@@ -1,6 +1,6 @@
 # InPynamoDB
 
-![](https://travis-ci.org/sunghyun-lee/InPynamoDB.svg?branch=master)
+[![Build Status](https://travis-ci.org/sunghyun-lee/InPynamoDB.svg?branch=master)](https://travis-ci.org/sunghyun-lee/InPynamoDB)
 [![Coverage Status](https://coveralls.io/repos/github/sunghyun-lee/InPynamoDB/badge.svg?branch=4.1.0)](https://coveralls.io/github/sunghyun-lee/InPynamoDB?branch=master)
 
 This transforms [PynamoDB](https://github.com/pynamodb/PynamoDB)'s basic methods working asynchronously used [aiobotocore](https://github.com/aio-libs/aiobotocore).

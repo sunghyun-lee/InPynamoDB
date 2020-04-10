@@ -460,6 +460,7 @@ class ModelTestCase(TestCase):
             if not found:
                 raise AssertionError("Values not equal: {} {}".format(list1, list2))
 
+    @pytest.mark.asyncio
     async def test_create_model(self):
         """
         Model.create_table
@@ -619,6 +620,7 @@ class ModelTestCase(TestCase):
             with pytest.raises(TableError) as e:
                 await UserModel.create_table(read_capacity_units=2, write_capacity_units=2, wait=True)
 
+    @pytest.mark.asyncio
     async def test_model_attrs(self):
         """
         Model()
@@ -668,6 +670,7 @@ class ModelTestCase(TestCase):
         self.assertRaises(AttributeError, getattr, user, "user_name")
         self.assertRaises(ValueError, UserModel, user_name="bob")
 
+    @pytest.mark.asyncio
     async def test_refresh(self):
         """
         Model.refresh
@@ -690,6 +693,7 @@ class ModelTestCase(TestCase):
                 GET_MODEL_ITEM_DATA.get(ITEM).get('user_name').get(STRING_SHORT))
             self.assertIsNone(item.picture)
 
+    @pytest.mark.asyncio
     async def test_complex_key(self):
         """
         Model with complex key
@@ -701,6 +705,7 @@ class ModelTestCase(TestCase):
             req.return_value = COMPLEX_ITEM_DATA
             await item.refresh()
 
+    @pytest.mark.asyncio
     async def test_delete(self):
         """
         Model.delete
@@ -784,6 +789,7 @@ class ModelTestCase(TestCase):
             req.return_value = None
             deep_eq(args, params, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_delete_doesnt_do_validation_on_null_attributes(self):
         """
         Model.delete
@@ -799,11 +805,12 @@ class ModelTestCase(TestCase):
                 await batch.delete(car)
 
     @patch('time.time')
+    @pytest.mark.asyncio
     async def test_update(self, mock_time):
         """
         Model.update
         """
-        mock_time.side_effect = [1559692800]  # 2019-06-05 00:00:00 UTC
+        mock_time.return_value = 1559692800  # 2019-06-05 00:00:00 UTC
         await self.init_table_meta(SimpleUserModel, SIMPLE_MODEL_TABLE_DATA)
         item = SimpleUserModel('foo', is_active=True, email='foo@example.com', signature='foo')
 
@@ -884,6 +891,7 @@ class ModelTestCase(TestCase):
             assert item.views is None
             self.assertEqual({'bob'}, item.custom_aliases)
 
+    @pytest.mark.asyncio
     async def test_save(self):
         """
         Model.save
@@ -1047,6 +1055,7 @@ class ModelTestCase(TestCase):
             }
             deep_eq(args, params, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_filter_count(self):
         """
         Model.count(**filters)
@@ -1073,6 +1082,7 @@ class ModelTestCase(TestCase):
             }
             deep_eq(args, params, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_count(self):
         """
         Model.count()
@@ -1091,10 +1101,12 @@ class ModelTestCase(TestCase):
             params = {'TableName': 'UserModel'}
             self.assertEqual(args, params)
 
+    @pytest.mark.asyncio
     async def test_count_no_hash_key(self):
         with pytest.raises(ValueError):
             await UserModel.count(filter_condition=(UserModel.zip_code <= '94117'))
 
+    @pytest.mark.asyncio
     async def test_index_count(self):
         """
         Model.index.count()
@@ -1131,6 +1143,7 @@ class ModelTestCase(TestCase):
             }
             deep_eq(args, params, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_index_multipage_count(self):
         await self.init_table_meta(CustomAttrNameModel, CUSTOM_ATTR_NAME_INDEX_TABLE_DATA)
         with patch(PATCH_METHOD) as req:
@@ -1169,6 +1182,7 @@ class ModelTestCase(TestCase):
             deep_eq(args_one, params_one, _assert=True)
             deep_eq(args_two, params_two, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_query_limit_greater_than_available_items_single_page(self):
         await self.init_table_meta(UserModel, MODEL_TABLE_DATA)
         UserModel('foo', 'bar')
@@ -1186,6 +1200,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(len(results), 5)
             self.assertEqual(req.mock_calls[0][1][1]['Limit'], 25)
 
+    @pytest.mark.asyncio
     async def test_query_limit_identical_to_available_items_single_page(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = MODEL_TABLE_DATA
@@ -1204,6 +1219,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(len(results), 5)
             self.assertEqual(req.mock_calls[0][1][1]['Limit'], 5)
 
+    @pytest.mark.asyncio
     async def test_query_limit_less_than_available_items_multiple_page(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = MODEL_TABLE_DATA
@@ -1232,6 +1248,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 30)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 60)
 
+    @pytest.mark.asyncio
     async def test_query_limit_less_than_available_and_page_size(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = MODEL_TABLE_DATA
@@ -1260,6 +1277,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 30)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 60)
 
+    @pytest.mark.asyncio
     async def test_query_limit_greater_than_available_items_multiple_page(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = MODEL_TABLE_DATA
@@ -1288,6 +1306,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 30)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 60)
 
+    @pytest.mark.asyncio
     async def test_query_limit_greater_than_available_items_and_page_size(self):
         await self.init_table_meta(UserModel, MODEL_TABLE_DATA)
         UserModel('foo', 'bar')
@@ -1315,6 +1334,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 30)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 60)
 
+    @pytest.mark.asyncio
     async def test_query_with_exclusive_start_key(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = MODEL_TABLE_DATA
@@ -1341,6 +1361,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 10)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 10)
 
+    @pytest.mark.asyncio
     async def test_query(self):
         """
         Model.query
@@ -1519,6 +1540,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(params, req.call_args[0][1])
             self.assertTrue(len(queried) == len(items))
 
+    @pytest.mark.asyncio
     async def test_scan_limit_with_page_size(self):
         with patch(PATCH_METHOD) as req:
             items = []
@@ -1543,6 +1565,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(results_iter.total_count, 30)
             self.assertEqual(results_iter.page_iter.total_scanned_count, 60)
 
+    @pytest.mark.asyncio
     async def test_scan_limit(self):
         """
         Model.scan(limit)
@@ -1579,6 +1602,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(req.mock_calls[1][1][1]['ConsistentRead'], True)
             self.assertEqual(count, 4)
 
+    @pytest.mark.asyncio
     async def test_scan(self):
         """
         Model.scan
@@ -1625,6 +1649,7 @@ class ModelTestCase(TestCase):
             async for item in await UserModel.scan():
                 self.assertIsNotNone(item)
 
+    @pytest.mark.asyncio
     async def test_get(self):
         """
         Model.get
@@ -1716,6 +1741,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(item.overidden_user_name, CUSTOM_ATTR_NAME_ITEM_DATA['Item']['user_name']['S'])
             self.assertEqual(item.overidden_user_id, CUSTOM_ATTR_NAME_ITEM_DATA['Item']['user_id']['S'])
 
+    @pytest.mark.asyncio
     async def test_batch_get(self):
         """
         Model.batch_get
@@ -1867,6 +1893,7 @@ class ModelTestCase(TestCase):
             async for item in UserModel.batch_get(item_keys):
                 self.assertIsNotNone(item)
 
+    @pytest.mark.asyncio
     async def test_batch_write(self):
         """
         Model.batch_write
@@ -1913,6 +1940,7 @@ class ModelTestCase(TestCase):
                 for item in items:
                     await batch.save(item)
 
+    @pytest.mark.asyncio
     async def test_batch_write_with_unprocessed(self):
         picture_blob = b'FFD8FFD8'
 
@@ -1957,6 +1985,7 @@ class ModelTestCase(TestCase):
 
             self.assertEqual(len(req.mock_calls), 3)
 
+    @pytest.mark.asyncio
     async def test_index_queries(self):
         """
         Model.Index.Query
@@ -2091,6 +2120,7 @@ class ModelTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_multiple_indices_share_non_key_attribute(self):
         """
         Models.Model
@@ -2161,6 +2191,7 @@ class ModelTestCase(TestCase):
             for key in ['KeySchema', 'AttributeDefinitions', 'LocalSecondaryIndexes', 'GlobalSecondaryIndexes']:
                 self.assert_dict_lists_equal(args[key], params[key])
 
+    @pytest.mark.asyncio
     async def test_global_index(self):
         """
         Models.GlobalSecondaryIndex
@@ -2210,6 +2241,7 @@ class ModelTestCase(TestCase):
             self.assert_dict_lists_equal(schema['key_schema'], params['KeySchema'])
             self.assert_dict_lists_equal(schema['attribute_definitions'], params['AttributeDefinitions'])
 
+    @pytest.mark.asyncio
     async def test_local_index(self):
         """
         Models.LocalSecondaryIndex
@@ -2339,6 +2371,7 @@ class ModelTestCase(TestCase):
 
             BadIndex()
 
+    @pytest.mark.asyncio
     async def test_old_style_model_exception(self):
         """
         Display warning for pre v1.0 Models
@@ -2346,6 +2379,7 @@ class ModelTestCase(TestCase):
         with self.assertRaises(AttributeError):
             await OldStyleModel.exists()
 
+    @pytest.mark.asyncio
     async def test_dumps(self):
         """
         Model.dumps
@@ -2367,6 +2401,7 @@ class ModelTestCase(TestCase):
                 self.assertEqual(new_item[1][pythonic(ATTRIBUTES)]['email']['S'], original['email']['S'])
                 self.assertEqual(new_item[1][pythonic(ATTRIBUTES)]['picture']['B'], original['picture']['B'])
 
+    @pytest.mark.asyncio
     async def test_loads(self):
         """
         Model.loads
@@ -2409,6 +2444,7 @@ class ModelTestCase(TestCase):
         }
         self.assert_dict_lists_equal(req.call_args[0][1]['RequestItems']['UserModel'], args['UserModel'])
 
+    @pytest.mark.asyncio
     async def test_loads_complex_model(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = {}
@@ -2512,24 +2548,28 @@ class ModelTestCase(TestCase):
             employees=[emp1, emp2, emp3, emp4]
         )
 
+    @pytest.mark.asyncio
     async def test_model_with_maps(self):
         await self.init_table_meta(OfficeEmployee, OFFICE_EMPLOYEE_MODEL_TABLE_DATA)
         office_employee = self._get_office_employee()
         with patch(PATCH_METHOD):
             await office_employee.save()
 
+    @pytest.mark.asyncio
     async def test_model_with_list(self):
         await self.init_table_meta(GroceryList, GROCERY_LIST_MODEL_TABLE_DATA)
         grocery_list = self._get_grocery_list()
         with patch(PATCH_METHOD):
             await grocery_list.save()
 
+    @pytest.mark.asyncio
     async def test_model_with_list_of_map(self):
         await self.init_table_meta(Office, OFFICE_MODEL_TABLE_DATA)
         item = self._get_office()
         with patch(PATCH_METHOD):
             await item.save()
 
+    @pytest.mark.asyncio
     async def test_model_with_nulls_validates(self):
         await self.init_table_meta(CarModel, CAR_MODEL_TABLE_DATA)
         car_info = CarInfoMap(make='Dodge')
@@ -2537,6 +2577,7 @@ class ModelTestCase(TestCase):
         with patch(PATCH_METHOD):
             await item.save()
 
+    @pytest.mark.asyncio
     async def test_model_with_invalid_data_does_not_validate(self):
         await self.init_table_meta(CarModel, CAR_MODEL_TABLE_DATA)
         car_info = CarInfoMap(model='Envoy')
@@ -2571,6 +2612,7 @@ class ModelTestCase(TestCase):
         self.assertEqual(office.employees[2].person.fname, 'Garrett')
         self.assertEqual(office.employees[0].person.lname, 'Phillips')
 
+    @pytest.mark.asyncio
     async def test_invalid_map_model_raises(self):
         fake_db = self.database_mocker(CarModel, CAR_MODEL_TABLE_DATA,
                                        FULL_CAR_MODEL_ITEM_DATA, 'car_id', 'N', '123')
@@ -2583,6 +2625,7 @@ class ModelTestCase(TestCase):
             except ValueError as e:
                 assert str(e) == "Attribute 'car_info' cannot be None"
 
+    @pytest.mark.asyncio
     async def test_model_with_maps_retrieve_from_db(self):
         fake_db = self.database_mocker(OfficeEmployee, OFFICE_EMPLOYEE_MODEL_TABLE_DATA,
                                        GET_OFFICE_EMPLOYEE_ITEM_DATA, 'office_employee_id', 'N', '123')
@@ -2595,6 +2638,7 @@ class ModelTestCase(TestCase):
                 GET_OFFICE_EMPLOYEE_ITEM_DATA.get(ITEM).get('person').get(
                     MAP_SHORT).get('firstName').get(STRING_SHORT))
 
+    @pytest.mark.asyncio
     async def test_model_with_maps_with_nulls_retrieve_from_db(self):
         fake_db = self.database_mocker(OfficeEmployee, OFFICE_EMPLOYEE_MODEL_TABLE_DATA,
                                        GET_OFFICE_EMPLOYEE_ITEM_DATA_WITH_NULL, 'office_employee_id', 'N', '123')
@@ -2609,6 +2653,7 @@ class ModelTestCase(TestCase):
             self.assertIsNone(item.person.age)
             self.assertIsNone(item.person.is_male)
 
+    @pytest.mark.asyncio
     async def test_model_with_maps_with_pythonic_attributes(self):
         fake_db = self.database_mocker(
             OfficeEmployee,
@@ -2635,6 +2680,7 @@ class ModelTestCase(TestCase):
         with pytest.raises(AttributeError):
             item.person.is_dude
 
+    @pytest.mark.asyncio
     async def test_model_with_list_retrieve_from_db(self):
         fake_db = self.database_mocker(GroceryList, GROCERY_LIST_MODEL_TABLE_DATA,
                                        GET_GROCERY_LIST_ITEM_DATA, 'store_name', 'S', 'Haight Street Market')
@@ -2649,6 +2695,7 @@ class ModelTestCase(TestCase):
                     LIST_SHORT)[2].get(STRING_SHORT))
             self.assertEqual(item.store_name, 'Haight Street Market')
 
+    @pytest.mark.asyncio
     async def test_model_with_list_of_map_retrieve_from_db(self):
         fake_db = self.database_mocker(Office, OFFICE_MODEL_TABLE_DATA,
                                        GET_OFFICE_ITEM_DATA, 'office_id', 'N', '6161')
@@ -2664,6 +2711,7 @@ class ModelTestCase(TestCase):
                 GET_OFFICE_ITEM_DATA.get(ITEM).get('employees').get(
                     LIST_SHORT)[2].get(MAP_SHORT).get('person').get(MAP_SHORT).get('firstName').get(STRING_SHORT))
 
+    @pytest.mark.asyncio
     async def test_complex_model_retrieve_from_db(self):
         fake_db = self.database_mocker(ComplexModel, COMPLEX_MODEL_TABLE_DATA,
                                        COMPLEX_MODEL_ITEM_DATA, 'key', 'N', '123')
@@ -2698,6 +2746,7 @@ class ModelTestCase(TestCase):
         fake_db.side_effect = fake_dynamodb
         return fake_db
 
+    @pytest.mark.asyncio
     async def test_car_model_retrieve_from_db(self):
         fake_db = self.database_mocker(CarModel, CAR_MODEL_TABLE_DATA,
                                        FULL_CAR_MODEL_ITEM_DATA, 'car_id', 'N', '123')
@@ -2710,6 +2759,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(item.car_info.make, 'Volkswagen')
             self.assertEqual(item.car_info.model, 'Beetle')
 
+    @pytest.mark.asyncio
     async def test_car_model_with_null_retrieve_from_db(self):
         fake_db = self.database_mocker(CarModel, CAR_MODEL_TABLE_DATA,
                                        CAR_MODEL_WITH_NULL_ITEM_DATA, 'car_id', 'N', '123')
@@ -2723,6 +2773,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(item.car_info.make, 'Dodge')
             self.assertIsNone(item.car_info.model)
 
+    @pytest.mark.asyncio
     async def test_invalid_car_model_with_null_retrieve_from_db(self):
         fake_db = self.database_mocker(CarModel, CAR_MODEL_TABLE_DATA,
                                        INVALID_CAR_MODEL_WITH_NULL_ITEM_DATA, 'car_id', 'N', '123')
@@ -2735,12 +2786,14 @@ class ModelTestCase(TestCase):
                                   'car_id').get(NUMBER_SHORT)))
             self.assertIsNone(item.car_info.make)
 
+    @pytest.mark.asyncio
     async def test_boolean_serializes_as_bool(self):
         with patch(PATCH_METHOD) as req:
             req.return_value = BOOLEAN_MODEL_TABLE_DATA
             item = BooleanModel(user_name='justin', is_human=True)
             await item.save()
 
+    @pytest.mark.asyncio
     async def test_deserializing_bool_false_works(self):
         fake_db = self.database_mocker(BooleanModel,
                                        BOOLEAN_MODEL_TABLE_DATA,
@@ -2750,6 +2803,7 @@ class ModelTestCase(TestCase):
             item = await BooleanModel.get('alf')
             self.assertFalse(item.is_human)
 
+    @pytest.mark.asyncio
     async def test_deserializing_new_style_bool_true_works(self):
         fake_db = self.database_mocker(BooleanModel,
                                        BOOLEAN_MODEL_TABLE_DATA,
@@ -2759,6 +2813,7 @@ class ModelTestCase(TestCase):
             item = await BooleanModel.get('justin')
             self.assertTrue(item.is_human)
 
+    @pytest.mark.asyncio
     async def test_deserializing_map_four_layers_deep_works(self):
         fake_db = self.database_mocker(TreeModel,
                                        TREE_MODEL_TABLE_DATA,
@@ -2832,6 +2887,7 @@ class ModelTestCase(TestCase):
         for k, v in map_native.items():
             self.assertEqual(v, actual[k])
 
+    @pytest.mark.asyncio
     async def test_raw_map_from_raw_data_works(self):
         map_native = {
             'foo': 'bar', 'num': 1, 'bool_type': True,
@@ -2914,6 +2970,7 @@ class ModelTestCase(TestCase):
         for k, v in map_native.items():
             self.assertEqual(actual.map_field[k], v)
 
+    @pytest.mark.asyncio
     async def test_raw_map_as_sub_map_from_raw_data_works(self):
         map_native, map_serialized, sub_attr, instance = self._get_raw_map_as_sub_map_test_data()
         fake_db = self.database_mocker(ExplicitRawMapAsMemberOfSubClass,
@@ -2929,6 +2986,7 @@ class ModelTestCase(TestCase):
             self.assertEqual(actual.map_field['mapy']['baz'],
                              map_native.get('mapy').get('baz'))
 
+    @pytest.mark.asyncio
     async def test_model_subclass_attributes_inherited_on_create(self):
         scope_args = {'count': 0}
 
@@ -2952,6 +3010,7 @@ class ModelTestCase(TestCase):
             self.assert_dict_lists_equal(actual['AttributeDefinitions'],
                                          DOG_TABLE_DATA['Table']['AttributeDefinitions'])
 
+    @pytest.mark.asyncio
     async def test_model_version_attribute_save(self):
         await self.init_table_meta(VersionedModel, VERSIONED_TABLE_DATA)
         item = VersionedModel('test_user_name', email='test_user@email.com')
@@ -3005,6 +3064,7 @@ class ModelTestCase(TestCase):
 
             deep_eq(args, params, _assert=True)
 
+    @pytest.mark.asyncio
     async def test_version_attribute_increments_on_update(self):
         await self.init_table_meta(VersionedModel, VERSIONED_TABLE_DATA)
         item = VersionedModel('test_user_name', email='test_user@email.com')
@@ -3190,6 +3250,7 @@ class ModelInitTestCase(TestCase):
                 ttl = TTLAttribute(default_for_new=timedelta(minutes=1))
                 another_ttl = TTLAttribute()
 
+    @pytest.mark.asyncio
     async def test_get_ttl_attribute_fails(self):
         with patch(PATCH_METHOD) as req:
             req.side_effect = Exception

@@ -1,21 +1,34 @@
 # InPynamoDB
 
+![](https://travis-ci.org/sunghyun-lee/InPynamoDB.svg?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/sunghyun-lee/InPynamoDB/badge.svg?branch=4.1.0)](https://coveralls.io/github/sunghyun-lee/InPynamoDB?branch=master)
+
 This transforms [PynamoDB](https://github.com/pynamodb/PynamoDB)'s basic methods working asynchronously used [aiobotocore](https://github.com/aio-libs/aiobotocore).
 
-If you find any bugs of suggestions, please leave issue.
+This library may be merged into PynamoDB as a feature of it, but for the time being, you can use this library if you need to run any operation on DynamoDB asynchronously. 
 
-There's no main documentation yet, for the time being, you can refer to [PynamoDB documentation](http://pynamodb.readthedocs.io).
+### From introduction of [PynamoDB](https://github.com/pynamodb/PynamoDB):
+A Pythonic interface for Amazon's DynamoDB that supports Python 2 and 3. (InPynamoDB supports from Python 3.6 because this uses async/await.)
 
-## Requirements
+DynamoDB is a great NoSQL service provided by Amazon, but the API is verbose. PynamoDB presents you with a simple, elegant API.
+ 
+# Requirements
 - Python 3.6 and above for this library is using `async/await` keyword.
 
-## Installation
+# Installation
 $ pip install InPynamoDB
 
-## Basic Usage
+# Basic Usage
 
-- Declare model
+This library is not well-documented. If you know how to use asyncio with async/await syntax, you will know where to change
+from PynamoDB syntax since it is very intuitive to use if you know how to use PynamoDB and asyncio.
 
+Detailed document will be available, soon. (Please bear with me) 
+
+For the time being, please refer to [PynamoDB documentation](https://pynamodb.readthedocs.io/).
+
+
+### Defining model
 ```python
 from inpynamodb.models import Model
 from inpynamodb.attributes import UnicodeAttribute
@@ -29,16 +42,32 @@ class UserModel(Model):
     email = UnicodeAttribute(null=True)
     first_name = UnicodeAttribute(range_key=True)
     last_name = UnicodeAttribute(hash_key=True)
+
+
+# you can declare model:
+user = UserModel(email="hgd@testing.com", first_name="gildong", last_name="hong")
+
 ```
 
-- GET
+### Basic Manipulation
 
 ```python
+# GET
 user = await UserModel.get(hash_key="John", range_key="Doe")
+
+# BATCH_GET
+async for user in UserModel.batch_get(keys):  # `keys` argument should be list.
+    print(user.id)
+    # ...
 ```
 
 - UPDATE
 
 ```python
-await user.update()
+await user.update(actions=[UserModel.first_name.set("new_first_name")])
 ```
+
+# Contribution
+Any form of contribution is always welcome! This library uses `poetry` as package manager, so you have to install [poetry](https://python-poetry.org/) to install required packages.
+
+Please leave issues in any form, I will check ASAP.

@@ -1,6 +1,7 @@
 """
 Test suite for the table class
 """
+import pytest
 from asynctest import TestCase
 from asynctest.mock import patch
 
@@ -23,6 +24,7 @@ class ConnectionTestCase(TestCase):
         self.test_table_name = 'ci-table'
         self.region = DEFAULT_REGION
 
+    @pytest.mark.asyncio
     async def test_create_connection(self):
         """
         TableConnection()
@@ -30,6 +32,7 @@ class ConnectionTestCase(TestCase):
         conn = await TableConnection.initialize(self.test_table_name)
         self.assertIsNotNone(conn)
 
+    @pytest.mark.asyncio
     async def test_connection_session_set_credentials(self):
         conn = await TableConnection.initialize(
             self.test_table_name,
@@ -42,6 +45,7 @@ class ConnectionTestCase(TestCase):
         self.assertEqual(credentials.access_key, 'access_key_id')
         self.assertEqual(credentials.secret_key, 'secret_access_key')
 
+    @pytest.mark.asyncio
     async def test_connection_session_set_credentials_with_session_token(self):
         conn = await TableConnection.initialize(
             self.test_table_name,
@@ -56,6 +60,7 @@ class ConnectionTestCase(TestCase):
         self.assertEqual(credentials.secret_key, 'secret_access_key')
         self.assertEqual(credentials.token, 'session_token')
 
+    @pytest.mark.asyncio
     async def test_create_table(self):
         """
         TableConnection.create_table
@@ -123,6 +128,7 @@ class ConnectionTestCase(TestCase):
             kwargs = req.call_args[0][1]
             self.assertEqual(kwargs, params)
 
+    @pytest.mark.asyncio
     async def test_update_time_to_live(self):
         """
         TableConnection.update_time_to_live
@@ -141,6 +147,7 @@ class ConnectionTestCase(TestCase):
             kwargs = req.call_args[0][1]
             self.assertEqual(kwargs, params)
 
+    @pytest.mark.asyncio
     async def test_delete_table(self):
         """
         TableConnection.delete_table
@@ -153,6 +160,7 @@ class ConnectionTestCase(TestCase):
             kwargs = req.call_args[0][1]
             self.assertEqual(kwargs, params)
 
+    @pytest.mark.asyncio
     async def test_update_table(self):
         """
         TableConnection.update_table
@@ -210,6 +218,7 @@ class ConnectionTestCase(TestCase):
             )
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_describe_table(self):
         """
         TableConnection.describe_table
@@ -221,6 +230,7 @@ class ConnectionTestCase(TestCase):
             self.assertEqual(conn.table_name, self.test_table_name)
             self.assertEqual(req.call_args[0][1], {'TableName': 'ci-table'})
 
+    @pytest.mark.asyncio
     async def test_delete_item(self):
         """
         TableConnection.delete_item
@@ -249,6 +259,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_update_item(self):
         """
         TableConnection.update_item
@@ -295,6 +306,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_get_item(self):
         """
         TableConnection.get_item
@@ -309,6 +321,7 @@ class ConnectionTestCase(TestCase):
             item = await conn.get_item("Amazon DynamoDB", "How do I update multiple items?")
             self.assertEqual(item, GET_ITEM_DATA)
 
+    @pytest.mark.asyncio
     async def test_put_item(self):
         """
         TableConnection.put_item
@@ -379,6 +392,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_batch_write_item(self):
         """
         TableConnection.batch_write_item
@@ -416,6 +430,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_batch_get_item(self):
         """
         TableConnection.batch_get_item
@@ -456,6 +471,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_query(self):
         """
         TableConnection.query
@@ -490,6 +506,7 @@ class ConnectionTestCase(TestCase):
             }
             self.assertEqual(req.call_args[0][1], params)
 
+    @pytest.mark.asyncio
     async def test_scan(self):
         """
         TableConnection.scan
